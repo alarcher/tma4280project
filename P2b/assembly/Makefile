@@ -5,8 +5,6 @@ CXXFLAGS=-O3 -I$(INCDIR)
 SRC =$(INCDIR)/tma.h
 SRC+=$(wildcard $(INCDIR)/tma/*.h)
 SRC+=$(wildcard $(INCDIR)/tma/*/*.h)
-SRC+=$(wildcard $(INCDIR)/tma/*/*/*.h)
-SRC+=$(wildcard *.h)
 
 main.cpp: $(SRC)
 

@@ -1,10 +1,14 @@
-#ifndef TMA_MAPPING_H_
-#define TMA_MAPPING_H_
+#ifndef TMA_MESH_MAPPING_H_
+#define TMA_MESH_MAPPING_H_
 
-#include <tma/types.h>
+#include <tma/mesh/mesh.h>
 
 namespace tma
 {
+
+/******************************************************************************
+ * Jacobian matrix
+ ******************************************************************************/
 
 template<uint N>
 struct Jacobian
@@ -21,6 +25,40 @@ struct Jacobian
   ///
   void operator()(real const * const * x);
 
+};
+
+/******************************************************************************
+ * Affine mapping
+ ******************************************************************************/
+
+template<class T, uint D>
+struct AffineMapping : public Jacobian<D>
+{
+  /// Coordinates
+  real const *x[D + 1];
+
+  ///
+  void operator()(mesh<T, D> const& m, uint i)
+  {
+    for (uint v = 0; v <= D; ++v)
+    {
+      x[v] = m.x(m.K(i)[v]);
+    }
+    Jacobian<D>::operator()(x);
+  }
+
+  void disp() const
+  {
+    if (x[0])
+      for (uint v = 0; v <= D; ++v)
+      {
+        for (uint i = 0; i < D; ++i) std::cout << "\t" << x[v][i];
+        std::cout << "\n";
+      }
+  }
+
+  AffineMapping() { for (uint v = 0; v <= D; ++v) x[v] = NULL; }
+  
 };
 
 //--- IMPLEMENTATION 1D -------------------------------------------------------
@@ -63,4 +101,4 @@ inline void Jacobian<2>::operator()(real const * const * x)
 
 } /* namespace tma */
 
-#endif /* TMA_MAPPING_H_ */
+#endif /* TMA_MESH_MAPPING_H_ */

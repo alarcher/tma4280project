@@ -1,23 +1,36 @@
-#ifndef TMA_MAPPING_H_
-#define TMA_MAPPING_H_
+#ifndef TMA_QUADRATURE_H_
+#define TMA_QUADRATURE_H_
 
 #include <tma/types.h>
 
 namespace tma
 {
 
-struct QR
+template<class T> struct QR;
+
+} /* namespace tma */
+
+#include <tma/cell/interval.h>
+
+namespace tma
 {
 
-  struct interval
-  {
+template<>
+struct QR<interval>
+{
 
-  };
+};
 
-  struct triangle
-  {
+} /* namespace tma */
 
-  };
+#include <tma/cell/triangle.h>
+
+namespace tma
+{
+
+template<>
+struct QR<triangle>
+{
 
 };
 

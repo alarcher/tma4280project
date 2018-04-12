@@ -18,10 +18,10 @@ template <class T>
 struct topology
 {
   // The constructor requires the number of cells and vertices
-  topology(uint ncells, uint nverts) :
+  topology(uidx ncells, uidx nverts) :
     ncells_(ncells),
     nverts_(nverts),
-    cv_(ncells ? new uint[ncells * T::num(0)]() : NULL), // Need to make sure it is non-zero
+    cv_(ncells ? new uidx[ncells * T::num(0)]() : NULL),// Should be non-zero
     offset_(0)
   {
   }
@@ -35,22 +35,20 @@ struct topology
   uint dim() const { return T::dim(); }
 
   // Return the number of cells in the mesh
-  uint ncells() const { return ncells_; }
+  uidx ncells() const { return ncells_; }
 
   // Return the number of vertices in the mesh
-  uint nverts() const { return nverts_; }
+  uidx nverts() const { return nverts_; }
 
   // Accessor for the vertices of the i-th cell
-  uint * operator()(uint i)
-  {
-    return cv_ + i * T::num(0);
-  }
+  uidx       * operator()(uint i)       { return cv_ + i * T::num(0); }
+  uidx const * operator()(uint i) const { return cv_ + i * T::num(0); }
 
   // Display the connectivities
   void dump() const
   {
-    uint const * cv = cv_;
-    for (uint c = 0; c < ncells_; ++c)
+    uidx const * cv = cv_;
+    for (uidx c = 0; c < ncells_; ++c)
     {
       std::cout << std::setw(4) << c << ":";
       for (uint v = 0; v < T::num(0); ++v, ++cv)
@@ -64,10 +62,10 @@ struct topology
 
 private:
 
-  uint const ncells_;
-  uint const nverts_;
-  uint * const cv_;
-  uint offset_; // Use in parallel
+  uidx const ncells_;
+  uidx const nverts_;
+  uidx * const cv_;
+  uidx offset_; // Use in parallel
 
 };
 
@@ -79,11 +77,10 @@ private:
 template <uint D>
 struct geometry
 {
-  geometry(uint nverts) :
+  geometry(uidx nverts) :
     nverts_(nverts),
     vx_(nverts ? new real[nverts*D]() : NULL)
   {
-
   }
 
   ~geometry()
@@ -92,16 +89,14 @@ struct geometry
   }
 
   // Accessor for the coordinates of the i-th vertex
-  real * operator()(uint i)
-  {
-    return vx_ + i * D;
-  }
+  real       * operator()(uidx i)       { return vx_ + i * D; }
+  real const * operator()(uidx i) const { return vx_ + i * D; }
 
   // Display the coordinates
   void dump() const
   {
     real const * vx = vx_;
-    for (uint v = 0; v < nverts_; ++v)
+    for (uidx v = 0; v < nverts_; ++v)
     {
       std::cout << std::setw(4) << v << ":";
       for (uint x = 0; x < D; ++x, ++vx)
@@ -115,7 +110,7 @@ struct geometry
 
 private:
 
-  uint const nverts_;
+  uidx const nverts_;
   real * const vx_;
 
 };
@@ -138,8 +133,32 @@ struct mesh
   {
   }
 
+  uidx ncells() const { return T_.ncells(); }
+  uidx nverts() const { return T_.nverts(); }
+
+  // Topology
   topology<T>& topo() { return T_; }
+
+  // Return array of vertex indices for the given cell
+  uidx       * K(uidx i)       { return T_(i); }
+  uidx const * K(uidx i) const { return T_(i); }
+  
+
+  // Geometry
   geometry<D>& geom() { return G_; }
+
+  // Return array of coordinates for the given vertex
+  real       * x(uidx i)       { return G_(i); }
+  real const * x(uidx i) const { return G_(i); }
+
+  // Display
+  void dump() const
+  {
+    message("Topology");
+    T_.dump();
+    message("Geometry");
+    G_.dump();
+  }
 
 private:
 

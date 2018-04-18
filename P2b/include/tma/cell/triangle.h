@@ -11,6 +11,8 @@ namespace tma
  */
 struct triangle
 {
+  static uint const topological_dimension = 2;
+
   // Return the topological dimension of the cell
   static uint dim() { return 2; }
 

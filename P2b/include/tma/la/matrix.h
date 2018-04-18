@@ -19,6 +19,16 @@ struct __mvp_op
   E const&  x_;
 };
 
+
+template<class K, class M>
+struct __mmp_op
+{
+  __mmp_op(M const& P, M const& Q) : P_(P), Q_(Q) { }
+  inline M& operator()(M& A) { P_.mmp(Q_, A); return A; }
+  M const&  P_;
+  M const&  Q_;
+};
+
 } /* namespace */
 
 //-----------------------------------------------------------------------------

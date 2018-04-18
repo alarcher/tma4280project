@@ -11,6 +11,8 @@ namespace tma
  */
 struct interval
 {
+  static uint const topological_dimension = 1;
+
   // Return the topological dimension of the cell
   static uint dim() { return 1; }
 
